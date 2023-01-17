@@ -1,11 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showerror
-
+from utils import BMR, BMI, export_to_txt
 
 class NegativeValueException(Exception):
     pass
-
 
 # root window
 root = tk.Tk()
@@ -14,25 +13,12 @@ root.geometry('540x360')
 root.configure(padx=20, pady=10)
 root.resizable(False, False)
 
-
-def BMR(s, w, a, h):
-    if s == 'female':
-        return 655.1 + (9.567 * w) + (1.85 * h) + (-4.68 * a)
-    else:
-        return 66.47 + (13.7 * w) + (5 * h) + (-6.76 * a)
-
-def BMI(w,h):
-    return w/(h/100)**2
-
-
-# frame
 frame = ttk.Frame(root)
 frame.grid(column=0, row=0, sticky="nsew")
 
-# field options
 options = {'padx': 5, 'pady': 5}
 
-#labels and inputs
+# labels and inputs
 sex_label = ttk.Label(frame, text='Płeć')
 sex_label.grid(column=0, row=0, sticky='ew')
 
@@ -60,8 +46,6 @@ height_label.grid(column=0, row=6, sticky='W', **options)
 height_input = tk.IntVar()
 height_input = ttk.Entry(frame, textvariable=height_input)
 height_input.grid(column=0, row=7, **options)
-
-#actions
 
 def action_button_clicked():
     try:
@@ -95,13 +79,17 @@ def action_button_clicked():
         height_input.delete(0, len(height_input.get()))
         age_input.delete(0, len(age_input.get()))
 
-#action_button
+
 action_button = ttk.Button(frame, text='Policz')
-action_button.grid(column=0, row=8, sticky='ew', **options)
+action_button.grid(column=0, row=9, sticky='ew', **options)
 action_button.configure(command=action_button_clicked)
 
-# result label
-info_header =ttk.Label(frame)
+export_button = ttk.Button(frame, text='Export do .txt')
+export_button.grid(column=1, row=9, sticky='ew', **options)
+export_button.configure(command=lambda: export_to_txt(collected_data))
+
+
+info_header = ttk.Label(frame)
 info_header.grid(row=0, column=1, **options)
 
 weight_info_label = ttk.Label(frame)
@@ -116,8 +104,8 @@ bmr_label.grid(row=4, column=1, **options)
 bmi_label = ttk.Label(frame)
 bmi_label.grid(row=5, column=1, **options)
 
-# add padding to the frame and show it
+collected_data = [weight_info_label, age_info_label, height_info_label, bmr_label, bmi_label]
+
 frame.grid(padx=10, pady=10)
 
-# start the app
 root.mainloop()
