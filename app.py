@@ -6,6 +6,9 @@ from utils import BMR, BMI, export_to_txt
 class NegativeValueException(Exception):
     pass
 
+class EmptyFieldError(Exception):
+    pass
+
 # root window
 root = tk.Tk()
 root.title('Calories calc')
@@ -22,8 +25,10 @@ options = {'padx': 5, 'pady': 5}
 sex_label = ttk.Label(frame, text='Płeć')
 sex_label.grid(column=0, row=0, sticky='ew')
 
+option_list = ("female", "male")
 sex_input = tk.StringVar()
-sex_input = ttk.OptionMenu(frame, sex_input, "female", "male")
+sex_input.set("Wybierz")
+sex_input = ttk.OptionMenu(frame, sex_input, option_list[0], *option_list)
 sex_input.grid(column=0, row=1, **options)
 
 weight_label = ttk.Label(frame, text='Waga (kg)')
@@ -57,7 +62,8 @@ def action_button_clicked():
 
         if weight <= 0 or height <= 0 or age <= 0:
             raise NegativeValueException
-
+    except EmptyFieldError:
+        showerror(title="Błąd", message="Wypełnij wszystkie wymagane pola!")
     except ValueError:
         showerror(title='Error', message="Błędne dane")
     except NegativeValueException:
