@@ -1,10 +1,32 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 from tkinter.messagebox import showerror
-from utils import BMR, BMI, export_to_txt
 
 class NegativeValueException(Exception):
     pass
+
+def BMR(s, w, a, h):
+    if s == 'K':
+        return 655.1 + (9.567 * w) + (1.85 * h) + (-4.68 * a)
+    else:
+        return 66.47 + (13.7 * w) + (5 * h) + (-6.76 * a)
+
+
+def BMI(w, h):
+    return w / (h / 100) ** 2
+
+
+def export_to_txt(data, button):
+    file = filedialog.asksaveasfile(defaultextension=".txt",
+                                    filetypes=[
+                                        ("Text file", ".txt"),
+                                        ("All files", ".*"),
+                                    ])
+    for i in data:
+        line = i.cget("text")
+        file.write(line + "\n")
+    file.close()
+    button["state"] = "disabled"
 
 class BodyParams(object):
     def __init__(self):
@@ -28,8 +50,6 @@ class BodyParams(object):
         self.gender_input.set("Wybierz płeć")
         self.gender_input = ttk.OptionMenu(self.frame, self.gender_input, option_list[0], *option_list)
         self.gender_input.grid(column=0, row=1, **self.options)
-# root window
-
 
         self.weight_label = ttk.Label(self.frame, text='Waga (kg)')
         self.weight_label.grid(column=0, row=2, sticky='W', **self.options)
@@ -58,7 +78,8 @@ class BodyParams(object):
 
         self.export_button = ttk.Button(self.frame, text='Exportuj do .txt')
         self.export_button.grid(column=1, row=9, sticky='ew', **self.options)
-        self.export_button.configure(command=lambda: export_to_txt(self.collected_data))
+        self.export_button.configure(command=lambda: export_to_txt(self.collected_data, self.export_button))
+        self.export_button['state']='disabled'
 
         self.info_header = ttk.Label(self.frame)
         self.info_header.grid(row=0, column=1, **self.options)
@@ -92,8 +113,10 @@ class BodyParams(object):
                 raise NegativeValueException
         except ValueError:
             showerror(title='Błąd', message="Błędne dane")
+            self.export_button['state'] = 'disabled'
         except NegativeValueException:
             showerror(title='Błąd', message="Wielkości fizyczne nie mogą być ujemne!")
+            self.export_button['state'] = 'disabled'
         else:
             self.info_header.config(text="Oto Twoje dane:")
 
@@ -106,10 +129,10 @@ class BodyParams(object):
 
             self.bmi_val = f'BMI: {bmi}'
             self.bmi_label.config(text=self.bmi_val)
+            self.export_button['state'] = 'enable'
 
             self.weight_input.delete(0, len(self.weight_input.get()))
             self.height_input.delete(0, len(self.height_input.get()))
             self.age_input.delete(0, len(self.age_input.get()))
-
 
 bk = BodyParams()
