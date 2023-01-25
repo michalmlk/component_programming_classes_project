@@ -46,9 +46,9 @@ class BodyParams(object):
         self.gender_label.grid(column=0, row=0, sticky='ew')
 
         option_list = ("K", "M")
-        self.gender_input = tk.StringVar()
-        self.gender_input.set("Wybierz płeć")
-        self.gender_input = ttk.OptionMenu(self.frame, self.gender_input, option_list[0], *option_list)
+        self.gender_selected = tk.StringVar()
+        self.gender_selected.set("Wybierz płeć")
+        self.gender_input = tk.OptionMenu(self.frame, self.gender_selected, *option_list)
         self.gender_input.grid(column=0, row=1, **self.options)
 
         self.weight_label = ttk.Label(self.frame, text='Waga (kg)')
@@ -106,7 +106,7 @@ class BodyParams(object):
             weight = float(self.weight_input.get())
             height = int(self.height_input.get())
             age = int(self.age_input.get())
-            bmr = round(BMR(self.gender_input, weight, age, height), 2)
+            bmr = round(BMR(self.gender_selected.get(), weight, age, height), 2)
             bmi = round(BMI(weight, height), 2)
 
             if weight <= 0 or height <= 0 or age <= 0:
