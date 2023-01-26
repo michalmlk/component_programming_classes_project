@@ -8,8 +8,10 @@ class NegativeValueException(Exception):
 def BMR(s, w, a, h):
     if s == 'K':
         return 655.1 + (9.567 * w) + (1.85 * h) + (-4.68 * a)
-    else:
+    elif s == 'M':
         return 66.47 + (13.7 * w) + (5 * h) + (-6.76 * a)
+    else:
+        return
 
 
 def BMI(w, h):
@@ -106,23 +108,23 @@ class BodyParams(object):
             weight = float(self.weight_input.get())
             height = int(self.height_input.get())
             age = int(self.age_input.get())
-            bmr = round(BMR(self.gender_selected.get(), weight, age, height), 2)
-            bmi = round(BMI(weight, height), 2)
 
             if weight <= 0 or height <= 0 or age <= 0:
                 raise NegativeValueException
+            if self.gender_selected.get() == 'Wybierz płeć':
+                raise ValueError
         except ValueError:
-            showerror(title='Błąd', message="Błędne dane")
+            showerror(title='Błąd', message="Błędne lub niepełne dane")
             self.export_button['state'] = 'disabled'
         except NegativeValueException:
-            showerror(title='Błąd', message="Wielkości fizyczne nie mogą być ujemne!")
+            showerror(title='Błąd', message="Wielkości fizyczne muszą być nieujemne!")
             self.export_button['state'] = 'disabled'
         else:
+            bmr = round(BMR(self.gender_selected.get(), weight, age, height), 2)
+            bmi = round(BMI(weight, height), 2)
             self.info_header.config(text="Oto Twoje dane:")
-
             self.bmr_val = f'BMR: {bmr} kcal'
             self.bmr_label.config(text=self.bmr_val)
-
             self.weight_info_label.config(text=f'Waga: {self.weight_input.get()} kg')
             self.age_info_label.config(text=f'Wiek: {self.age_input.get()} lat')
             self.height_info_label.config(text=f'Wzrost: {self.height_input.get()} cm')
